@@ -9,14 +9,24 @@ public class GreetingServiceImpl extends GreetingServiceGrpc.GreetingServiceImpl
     public void greeting(GreetingServiceOuterClass.HelloRequest request,
                          StreamObserver<GreetingServiceOuterClass.HelloResponse> responseObserver) {
         System.out.println(request);
-        //формируем ответ
-        GreetingServiceOuterClass.HelloResponse response = GreetingServiceOuterClass
-                                                            .HelloResponse
-                                                            .newBuilder()
-                                                            .setGreeting("Hello from server, "+request.getName())
-                                                            .build();
-        //возвращаем данные клиенту
-        responseObserver.onNext(response);
+
+        //возвращаем поток данных
+        for(int i=0;i<100;i++) {
+            try {
+                Thread.sleep(150);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //формируем ответ
+            GreetingServiceOuterClass.HelloResponse response = GreetingServiceOuterClass
+                    .HelloResponse
+                    .newBuilder()
+                    .setGreeting("Hello from server, "+request.getName())
+                    .build();
+
+            responseObserver.onNext(response);
+        }
         //завершаем передачу данных
         responseObserver.onCompleted();
     }
